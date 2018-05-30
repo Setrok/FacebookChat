@@ -232,7 +232,7 @@ public class StartActivity extends AppCompatActivity {
             intent.putExtra("birthday", birthdayStr);
             intent.putExtra("URL", profile_picture.toString());
         }
-        if(null == emailStr){
+        if(null != emailStr){
             intent.putExtra("email",emailStr);
         }
 
