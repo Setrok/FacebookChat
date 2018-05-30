@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "375238582099",
+    "firebase_url": "https://facebookchat-911a0.firebaseio.com",
+    "project_id": "facebookchat-911a0",
+    "storage_bucket": "facebookchat-911a0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375238582099:android:4dfd27f7f7c236de",
+        "android_client_info": {
+          "package_name": "com.example.facebook.facebookchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375238582099-2f1s50g097pi93o57njuc2emat1fi5uq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.facebook.facebookchat",
+            "certificate_hash": "3909b5235ab3c3798a5e2f5e93994e0c7df01986"
+          }
+        },
+        {
+          "client_id": "375238582099-eg0j1n870omqmsn2cj1ag5iv5sfffl21.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "375238582099-eg0j1n870omqmsn2cj1ag5iv5sfffl21.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG0rr6ilninjGC8ATUxl6S9UOpWaj6IHg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375238582099-eg0j1n870omqmsn2cj1ag5iv5sfffl21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
