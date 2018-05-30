@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".PhoneVerification" />
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatActivity" />
+        <activity android:name=".mpesa.MPesaActivity"></activity>
     </application>
 
 </manifest>

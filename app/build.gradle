@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 27
@@ -20,6 +21,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':mpesa')
+    implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:27.1.1'
 //    implementation 'com.android.support:cardview-v7:27.1.1'

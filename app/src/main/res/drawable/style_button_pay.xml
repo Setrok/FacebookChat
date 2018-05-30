@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--<item android:state_pressed="true" >-->
+        <!--<shape>-->
+            <!--<solid android:color="#b2ea7c" />-->
+            <!--<padding android:top="10dp"-->
+                <!--android:left="15dp"-->
+                <!--android:right="15dp"-->
+                <!--android:bottom="10dp" />-->
+            <!--<corners android:radius="45dp" />-->
+        <!--</shape>-->
+    <!--</item>-->
+
+    <item android:state_enabled="false" >
+        <shape>
+            <solid android:color="#aeca93" />
+            <padding android:top="10dp"
+                android:left="15dp"
+                android:right="15dp"
+                android:bottom="10dp" />
+            <corners android:radius="45dp" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:state_enabled="true">
+            <solid android:color="#85BD50" />
+            <padding android:top="10dp"
+                android:left="15dp"
+                android:right="15dp"
+                android:bottom="10dp" />
+            <corners android:radius="45dp" />
+        </shape>
+    </item>
+</selector>
+
+
+
+
+
+
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<shape xmlns:android="http://schemas.android.com/apk/res/android">-->
+    <!--<solid android:color="#85BD50" />-->
+    <!--<padding android:top="10dp"-->
+        <!--android:left="15dp"-->
+        <!--android:right="15dp"-->
+        <!--android:bottom="10dp" />-->
+    <!--<corners android:radius="45dp" />-->
+<!--</shape>-->
