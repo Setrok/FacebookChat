@@ -140,6 +140,11 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
             Log.i("InfoApp","birthday is" + birthday);
         }
 
+        if(getIntent().hasExtra("email")){
+            email  = getIntent().getStringExtra("email");
+            Log.i("InfoApp","email is" + email);
+        }
+
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
         mStatusText = findViewById(R.id.status);
@@ -161,6 +166,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
+
         // [END initialize_auth]
 
         // Initialize phone auth callbacks
@@ -347,13 +353,18 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     // [START resend_verification]
     private void resendVerificationCode(String phoneNumber,
                                         PhoneAuthProvider.ForceResendingToken token) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNumber,        // Phone number to verify
-                900,                 // Timeout duration
-                TimeUnit.SECONDS,   // Unit of timeout
-                this,               // Activity (for callback binding)
-                mCallbacks,         // OnVerificationStateChangedCallbacks
-                token);             // ForceResendingToken from callbacks
+        try {
+            PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                    phoneNumber,        // Phone number to verify
+                    60,                 // Timeout duration
+                    TimeUnit.SECONDS,   // Unit of timeout
+                    this,               // Activity (for callback binding)
+                    mCallbacks,         // OnVerificationStateChangedCallbacks
+                    token);             // ForceResendingToken from callbacks
+            Log.i("InfoApp","resent!!!!!!!!!!!");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -406,37 +417,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 
                                                 if(databaseError == null){
-
-                                                    if(!url.isEmpty()){
-
-                                                        Log.d(TAG, "not default");
-                                                        StorageReference filePath = mImageStorage.child("Profile_images").child(currentUser.getPhoneNumber()+".jpg");
-
-                                                        filePath.putFile(Uri.parse(url)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                                                                if(task.isSuccessful()) {
-
-                                                                    Log.d(TAG, "file is successfully uploaded"+ url);
-                                                                    //showProgressBar(false);
-
-//                                                                    Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
-//                                                                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                                                                    startActivity(mainIntent);
-//                                                                    finish();
-                                                                }
-                                                                else {
-                                                                    Log.d(TAG, "Failed loading file");
-                                                                    task.getException().printStackTrace();
-
-                                                                    //showProgressBar(false);
-                                                                }
-
-                                                            }
-                                                        });
-
-                                                    }
+                                                    Log.i("AppInfo","db updated just fine");
 
                                                 } else{
                                                     Log.i("AppInfo",databaseError.getMessage());
