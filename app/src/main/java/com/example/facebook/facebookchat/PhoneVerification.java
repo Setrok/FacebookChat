@@ -658,8 +658,8 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                 verifyPhoneNumberWithCode(mVerificationId, code);
                 break;
             case R.id.button_resend:
-                fillTestData();
-                //resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
+                //fillTestData();
+                resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
                 break;
             case R.id.sign_out_button:
                 signOut();
