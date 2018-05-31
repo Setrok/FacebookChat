@@ -80,7 +80,7 @@ import java.util.concurrent.TimeUnit;
 public class PhoneVerification extends AppCompatActivity implements View.OnClickListener{
 
 
-    private static final String TAG = "PhoneAuthActivity";
+    private static final String TAG = "InfoApp";
 
     private static final String KEY_VERIFY_IN_PROGRESS = "key_verify_in_progress";
 
@@ -140,6 +140,11 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
             Log.i("InfoApp","birthday is" + birthday);
         }
 
+        if(getIntent().hasExtra("email")){
+            email  = getIntent().getStringExtra("email");
+            Log.i("InfoApp","email is" + email);
+        }
+
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
         mStatusText = findViewById(R.id.status);
@@ -161,6 +166,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
+
         // [END initialize_auth]
 
         // Initialize phone auth callbacks
@@ -347,17 +353,90 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     // [START resend_verification]
     private void resendVerificationCode(String phoneNumber,
                                         PhoneAuthProvider.ForceResendingToken token) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNumber,        // Phone number to verify
-                900,                 // Timeout duration
-                TimeUnit.SECONDS,   // Unit of timeout
-                this,               // Activity (for callback binding)
-                mCallbacks,         // OnVerificationStateChangedCallbacks
-                token);             // ForceResendingToken from callbacks
+        try {
+            PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                    phoneNumber,        // Phone number to verify
+                    60,                 // Timeout duration
+                    TimeUnit.SECONDS,   // Unit of timeout
+                    this,               // Activity (for callback binding)
+                    mCallbacks,         // OnVerificationStateChangedCallbacks
+                    token);             // ForceResendingToken from callbacks
+            Log.i("InfoApp","resent!!!!!!!!!!!");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
+    public void fillTestData(){
+
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Log.i("InfoApp",""+dataSnapshot);
+                if( dataSnapshot.hasChild(currentUser.getPhoneNumber()) ){
+
+                    Log.i("InfoApp","Has child Register");
+                    Intent registerIntent = new Intent(getApplicationContext(),ChatActivity.class);
+                    startActivity(registerIntent);
+
+                } else {
+
+                    rootRef = FirebaseDatabase.getInstance().getReference();
+
+                    HashMap userMap = new HashMap<>();
+
+//                                        userMap.put(currentUser.getPhoneNumber()+"/name",name);
+//                                        userMap.put(currentUser.getPhoneNumber()+"/birthday",birthday);
+
+                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/name","test_name");
+                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/age","111111");
+                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/image_url","urasgadfgdsfgsdfg");
+                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/phone","12312434124");
+                    if(null == email){
+
+                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/email",email);
+
+                    }
+                    //userMap.put(user.getPhoneNumber()+"/age",age);
+                    // userMap.put("Users/"+user.getPhoneNumber()+"/email",email);
+//
+                    rootRef.updateChildren(userMap, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                            if(databaseError == null){
+                                Log.i("AppInfo","db updated just fine");
+
+                            } else{
+                                Log.i("AppInfo",databaseError.getMessage());
+                            }
+
+                        }
+                    });
+
+                    Log.i("InfoApp","Has child main");
+                    Intent mainIntent = new Intent(getApplicationContext(),ChatActivity.class);
+                    startActivity(mainIntent);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+
+        Log.i("InfoApp","sign in Started");
+
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -378,11 +457,13 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                                     Log.i("InfoApp",""+dataSnapshot);
                                     if( dataSnapshot.hasChild(currentUser.getPhoneNumber()) ){
 
-                                        Log.i("InfoApp","Has child Register");
+                                        Log.e("InfoApp","Has child Register");
                                         Intent registerIntent = new Intent(getApplicationContext(),ChatActivity.class);
                                         startActivity(registerIntent);
 
                                     } else {
+
+                                        Log.e("InfoApp","Entered no child condition");
 
                                         rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -395,7 +476,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                                         userMap.put("Users/"+currentUser.getPhoneNumber()+"/age",birthday);
                                         userMap.put("Users/"+currentUser.getPhoneNumber()+"/image_url",url);
                                         userMap.put("Users/"+currentUser.getPhoneNumber()+"/phone",currentUser.getPhoneNumber());
-                                        if(!email.isEmpty()){
+                                        if(null != email){
                                             userMap.put("Users/"+currentUser.getPhoneNumber()+"/email",email);
                                         }
                                         //userMap.put(user.getPhoneNumber()+"/age",age);
@@ -406,37 +487,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 
                                                 if(databaseError == null){
-
-                                                    if(!url.isEmpty()){
-
-                                                        Log.d(TAG, "not default");
-                                                        StorageReference filePath = mImageStorage.child("Profile_images").child(currentUser.getPhoneNumber()+".jpg");
-
-                                                        filePath.putFile(Uri.parse(url)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                                                                if(task.isSuccessful()) {
-
-                                                                    Log.d(TAG, "file is successfully uploaded"+ url);
-                                                                    //showProgressBar(false);
-
-//                                                                    Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
-//                                                                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                                                                    startActivity(mainIntent);
-//                                                                    finish();
-                                                                }
-                                                                else {
-                                                                    Log.d(TAG, "Failed loading file");
-                                                                    task.getException().printStackTrace();
-
-                                                                    //showProgressBar(false);
-                                                                }
-
-                                                            }
-                                                        });
-
-                                                    }
+                                                    Log.i("AppInfo","db updated just fine");
 
                                                 } else{
                                                     Log.i("AppInfo",databaseError.getMessage());
@@ -607,6 +658,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                 verifyPhoneNumberWithCode(mVerificationId, code);
                 break;
             case R.id.button_resend:
+                //fillTestData();
                 resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
                 break;
             case R.id.sign_out_button:
