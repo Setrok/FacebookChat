@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".FacebookChat">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -24,7 +25,8 @@
         </activity>
         <activity android:name=".PhoneVerification" />
         <activity android:name=".ChatActivity" />
-        <activity android:name=".mpesa.MPesaActivity"></activity>
+        <activity android:name=".mpesa.MPesaActivity" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

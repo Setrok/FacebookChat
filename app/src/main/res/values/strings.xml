@@ -13,5 +13,9 @@
     <string name="text_transaction_cancelled">Transaction cancelled.</string>
     <string name="text_message_transaction_was_cancelled">Your transaction was cancelled.</string>
     <string name="button_ok">OK</string>
+    <string name="display_name">Name</string>
+    <string name="settings_status">email</string>
+    <string name="back_to_chat">Back to Chat</string>
+    <string name="seen_recently">Seen recently</string>
 
 </resources>

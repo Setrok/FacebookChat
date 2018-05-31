@@ -367,72 +367,6 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
         }
     }
 
-    public void fillTestData(){
-
-        final FirebaseUser currentUser = mAuth.getCurrentUser();
-        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Log.i("InfoApp",""+dataSnapshot);
-                if( dataSnapshot.hasChild(currentUser.getPhoneNumber()) ){
-
-                    Log.i("InfoApp","Has child Register");
-                    Intent registerIntent = new Intent(getApplicationContext(),ChatActivity.class);
-                    startActivity(registerIntent);
-
-                } else {
-
-                    rootRef = FirebaseDatabase.getInstance().getReference();
-
-                    HashMap userMap = new HashMap<>();
-
-//                                        userMap.put(currentUser.getPhoneNumber()+"/name",name);
-//                                        userMap.put(currentUser.getPhoneNumber()+"/birthday",birthday);
-
-                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/name","test_name");
-                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/age","111111");
-                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/image_url","urasgadfgdsfgsdfg");
-                    userMap.put("Users/"+currentUser.getPhoneNumber()+"/phone","12312434124");
-                    if(null == email){
-
-                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/email",email);
-
-                    }
-                    //userMap.put(user.getPhoneNumber()+"/age",age);
-                    // userMap.put("Users/"+user.getPhoneNumber()+"/email",email);
-//
-                    rootRef.updateChildren(userMap, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-                            if(databaseError == null){
-                                Log.i("AppInfo","db updated just fine");
-
-                            } else{
-                                Log.i("AppInfo",databaseError.getMessage());
-                            }
-
-                        }
-                    });
-
-                    Log.i("InfoApp","Has child main");
-                    Intent mainIntent = new Intent(getApplicationContext(),ChatActivity.class);
-                    startActivity(mainIntent);
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
 
         Log.i("InfoApp","sign in Started");
@@ -536,8 +470,10 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             updateUI(STATE_SIGNIN_SUCCESS, user);
-        } else {
-            updateUI(STATE_INITIALIZED);
+
+            Intent mainIntent = new Intent(getApplicationContext(),ChatActivity.class);
+            startActivity(mainIntent);
+            finish();
         }
     }
 

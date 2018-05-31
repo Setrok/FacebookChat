@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        android.defaultConfig.vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -47,6 +48,11 @@ dependencies {
 
     //implementation 'com.firebaseui:firebase-ui-auth:3.2.2'
     implementation 'com.firebaseui:firebase-ui-database:3.2.2'
+
+    //Image utils
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.6.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'id.zelory:compressor:2.1.0'
 
 }
 

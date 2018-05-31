@@ -14,4 +14,11 @@
     <color name="mpesa_dialog">#562171</color>
     <color name="mpesa_dialog_border">#3f0e58</color>
     <color name="mpesa_green">#85BD50</color>
+
+    <color name="tabUnselectedColor">#b7b7b7</color>
+    <color name="profile_disabled_btn">#aaa</color>
+    <color name="tabSelectedColor">#fc8f00</color>
+    <color name="profileBG">#262626</color>
+    <color name="profile_acceptBtn">#28bb18</color>
+    <color name="profile_cancelBtn">#cf2825</color>
 </resources>
