@@ -53,7 +53,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.loadImageInterface{
 
-    Button profileBtn;
+//    Button profileBtn;
 
     //    String chatUserId;
     String chatUserPic;
@@ -102,16 +102,16 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        profileBtn = findViewById(R.id.chat_goto_accountBtn);
-        profileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent profileIntent = new Intent(getApplicationContext(),ProfileActivity.class);
-                startActivity(profileIntent);
-
-            }
-        });
+//        profileBtn = findViewById(R.id.chat_goto_accountBtn);
+//        profileBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                Intent profileIntent = new Intent(getApplicationContext(),ProfileActivity.class);
+//                startActivity(profileIntent);
+//
+//            }
+//        });
 
         if(savedInstanceState!=null){
             mCurrentPage = savedInstanceState.getInt("messages");
@@ -129,8 +129,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
         ActionBar actionBar = getSupportActionBar();
 
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setElevation(60);
 
         rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -170,9 +171,18 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
         mMessagesList.setHasFixedSize(true);
         mMessagesList.setLayoutManager(mLinearLayout);
 
-
-
         //nameView.setText(chatUserName);
+
+        //Go To Profile
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent profileIntent = new Intent(getApplicationContext(),ProfileActivity.class);
+                startActivity(profileIntent);
+
+            }
+        });
 
         rootRef.child("Users").child(mUser.getPhoneNumber()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
