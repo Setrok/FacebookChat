@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,17 +19,19 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".StartActivity">
+        <activity android:name=".StartActivity"/>
+
+        <activity android:name=".PhoneVerification" />
+        <activity android:name=".ChatActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PhoneVerification" />
-        <activity android:name=".ChatActivity" />
         <activity android:name=".mpesa.MPesaActivity" />
         <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".FullScreenImageActivity"></activity>
     </application>
 
 </manifest>

@@ -3,8 +3,14 @@ package com.example.facebook.facebookchat;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,9 +29,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -63,7 +71,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
     private ProgressBar chatProgressBar;
     private LinearLayout chatInputLayout;
 
-    private TextView nameView,las1tSeenView;
+    private TextView nameView;
     private EditText messageView;
     private CircleImageView profileImage;
     private ImageView onlinePic;
@@ -184,7 +192,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
             }
         });
 
-        rootRef.child("Users").child(mUser.getPhoneNumber()).addListenerForSingleValueEvent(new ValueEventListener() {
+        rootRef.child("Users").child(AccessToken.getCurrentAccessToken().getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -414,6 +422,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
     private void sendMessage() {
 
+        if(!checkNetwork())
+        return;
+
         String message = messageView.getText().toString();
 
         if(!TextUtils.isEmpty(message)){
@@ -434,7 +445,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
             messageMap.put("profilePic",chatUserPic);
             messageMap.put("type","text");
             messageMap.put("time",ServerValue.TIMESTAMP);
-            messageMap.put("from",currentUser.getPhoneNumber());
+            messageMap.put("from",AccessToken.getCurrentAccessToken().getUserId());
 
             Map messageUserMap = new HashMap();
             messageUserMap.put(currentUserRef + "/" + pushID,messageMap);
@@ -465,6 +476,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
     protected void onStart() {
         super.onStart();
+
+            if(!checkNetwork())
+                return;
 
         checkIfUserLoggedIn();
 
@@ -505,6 +519,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
     private void loadMessageImage(Uri imageUri) {
 
+                if(!checkNetwork()){
+                    return;
+            }
+
 //        final String current_user_ref = "messages/" + currentUser.getUid() + "/" + chatUserId;
 //        final String chat_user_ref = "messages/" + chatUserId + "/" + currentUser.getUid();
 
@@ -530,7 +548,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
                     messageMap.put("profilePic",chatUserPic);
                     messageMap.put("type", "image");
                     messageMap.put("time", ServerValue.TIMESTAMP);
-                    messageMap.put("from", currentUser.getPhoneNumber());
+                    messageMap.put("from", AccessToken.getCurrentAccessToken().getUserId());
 
                     Map messageUserMap = new HashMap();
                     messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
@@ -581,6 +599,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
     public void loadImageInto(String image, CircleImageView circleImageView){
 
+                if(!checkNetwork())
+                    return;
         //Picasso.with(context).load(image).placeholder(R.drawable.default_user).into(circleImageView);
 
         Glide.with(getApplicationContext())
@@ -597,24 +617,59 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
         Log.i("InfoApp", "Interface called");
 
-//        Intent fullScreenIntent = new Intent(getApplicationContext(),FullScreenImageActivity.class);
-//        fullScreenIntent.putExtra("imageUri",image);
-//        startActivity(fullScreenIntent);
+        Intent fullScreenIntent = new Intent(getApplicationContext(),FullScreenImageActivity.class);
+        fullScreenIntent.putExtra("imageUri",image);
+        startActivity(fullScreenIntent);
 
     }
 
     @Override
     public void loadGalleryImage(File file) {
+
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         intent.setData(Uri.fromFile(file));
         sendBroadcast(intent);
+
+    }
+
+    @Override
+    public  boolean isPermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v("InfoApp","Permission is granted");
+                return true;
+            } else {
+
+                Log.v("InfoApp","Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("InfoApp","Permission is granted");
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(getApplicationContext(), "Start loading...", Toast.LENGTH_LONG).show();
+            Log.v("InfoApp","Permission: "+permissions[0]+ "was "+grantResults[0]);
+            mAdapter.getImage(getApplicationContext());
+            //resume tasks needing this permission
+        } else{
+            Log.e("InfoApp","Permission:error" );
+        }
     }
 
     private void checkIfUserLoggedIn() {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(currentUser == null){
+        if(currentUser == null || null == AccessToken.getCurrentAccessToken().getUserId()){
             setToStart();
         }
 
@@ -634,4 +689,30 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
     }
 
+    private boolean checkNetwork() {
+        try {
+            boolean wifiDataAvailable = false;
+            boolean mobileDataAvailable = false;
+            ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo[] networkInfo = conManager.getAllNetworkInfo();
+            for (NetworkInfo netInfo : networkInfo) {
+                if (netInfo.getTypeName().equalsIgnoreCase("WIFI"))
+                    if (netInfo.isConnected())
+                        wifiDataAvailable = true;
+                if (netInfo.getTypeName().equalsIgnoreCase("MOBILE"))
+                    if (netInfo.isConnected())
+                        mobileDataAvailable = true;
+            }
+            return wifiDataAvailable || mobileDataAvailable;
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"No Internet Connection",Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }

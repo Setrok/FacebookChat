@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.facebook.AccessToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -32,10 +33,13 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Messages> mMessageList;
     private FirebaseAuth mAuth;
+    private Bitmap bitmap;
     private DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference().child("messages");
     //private Context context;
 
@@ -55,7 +59,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //        name = "John";
 
         mAuth = FirebaseAuth.getInstance();
-        currentUserId = mAuth.getCurrentUser().getPhoneNumber();
+//        currentUserId = mAuth.getCurrentUser().getPhoneNumber();
+        currentUserId = AccessToken.getCurrentAccessToken().getUserId();
     }
 
 
@@ -102,10 +107,70 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     public void onClick(View view) {
 
                         imageInterface.loadActivity(c.getMessage());
-//                        Intent fullScreenIntent = new Intent(messageViewHolder.messageImage.getContext(),FullScreenImageActivity.class);
-//                        fullScreenIntent.putExtra("imageUri",c.getMessage());
-//                        start
 
+                    }
+                });
+
+                messageViewHolder.messageImage.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        CharSequence options[] = new CharSequence[]{"Download image", "Close"};
+
+
+
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(messageViewHolder.messageImage.getContext());
+
+                        builder.setTitle("Select option");
+                        builder.setItems(options, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                if (i == 0) {
+
+                                    BitmapDrawable draw = (BitmapDrawable) messageViewHolder.messageImage.getDrawable();
+                                    bitmap = draw.getBitmap();
+
+                                    if(imageInterface.isPermissionGranted()) {
+
+                                        Toast.makeText(messageViewHolder.messageImage.getContext(), "Start loading...", Toast.LENGTH_LONG).show();
+                                        getImage(messageViewHolder.messageImage.getContext());
+
+                                    }
+
+//                                    BitmapDrawable draw = (BitmapDrawable) messageViewHolderUser.messageImage.getDrawable();
+//                                    Bitmap bitmap = draw.getBitmap();
+
+//                                    FileOutputStream outStream = null;
+//                                    File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//                                    String fileName = String.format(Locale.US, "%d.jpg", System.currentTimeMillis());
+//                                    File outFile = new File(storageLoc, fileName);
+//                                    try {
+//
+//                                        outStream = new FileOutputStream(outFile);
+//                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//                                        outStream.flush();
+//                                        outStream.close();
+//
+//                                        imageInterface.loadGalleryImage(outFile);
+//
+//                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Loaded", Toast.LENGTH_LONG).show();
+//
+//                                    } catch (IOException e) {
+//                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Error happened", Toast.LENGTH_LONG).show();
+//                                        e.printStackTrace();
+//                                    }
+
+
+                                    Log.i("InfoApp", "Nice");
+                                }
+
+
+                            }
+                        });
+                        builder.show();
+
+
+                        return true;
                     }
                 });
 
@@ -139,7 +204,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 messageViewHolderUser.messageImage.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
+
+                        //if(!imageInterface.isPermissionGranted())
+                            //return  false;
+
                         CharSequence options[] = new CharSequence[]{"Download image", "Close"};
+
+
 
                         final AlertDialog.Builder builder = new AlertDialog.Builder(messageViewHolderUser.messageImage.getContext());
 
@@ -150,29 +221,38 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                                 if (i == 0) {
 
-                                    Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Start loading...", Toast.LENGTH_LONG).show();
-
                                     BitmapDrawable draw = (BitmapDrawable) messageViewHolderUser.messageImage.getDrawable();
-                                    Bitmap bitmap = draw.getBitmap();
+                                    bitmap = draw.getBitmap();
 
-                                    FileOutputStream outStream = null;
-                                    File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                                    String fileName = String.format(Locale.US, "%d.jpg", System.currentTimeMillis());
-                                    File outFile = new File(storageLoc, fileName);
-                                    try {
+                                    if(imageInterface.isPermissionGranted()) {
 
-                                        outStream = new FileOutputStream(outFile);
-                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-                                        outStream.flush();
-                                        outStream.close();
+                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Start loading...", Toast.LENGTH_LONG).show();
+                                        getImage(messageViewHolderUser.messageImage.getContext());
 
-                                        imageInterface.loadGalleryImage(outFile);
-
-                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Loaded", Toast.LENGTH_LONG).show();
-
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
                                     }
+
+//                                    BitmapDrawable draw = (BitmapDrawable) messageViewHolderUser.messageImage.getDrawable();
+//                                    Bitmap bitmap = draw.getBitmap();
+
+//                                    FileOutputStream outStream = null;
+//                                    File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//                                    String fileName = String.format(Locale.US, "%d.jpg", System.currentTimeMillis());
+//                                    File outFile = new File(storageLoc, fileName);
+//                                    try {
+//
+//                                        outStream = new FileOutputStream(outFile);
+//                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//                                        outStream.flush();
+//                                        outStream.close();
+//
+//                                        imageInterface.loadGalleryImage(outFile);
+//
+//                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Loaded", Toast.LENGTH_LONG).show();
+//
+//                                    } catch (IOException e) {
+//                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Error happened", Toast.LENGTH_LONG).show();
+//                                        e.printStackTrace();
+//                                    }
 
 
                                     Log.i("InfoApp", "Nice");
@@ -182,6 +262,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             }
                         });
                         builder.show();
+
 
                         return true;
                     }
@@ -196,6 +277,28 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //        //loadImageInto(c.get);
 //        //holder.timeText.setText(""+c.getTime());
 
+    }
+
+    public void getImage(Context context){
+        FileOutputStream outStream = null;
+        File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String fileName = String.format(Locale.US, "%d.jpg", System.currentTimeMillis());
+        File outFile = new File(storageLoc, fileName);
+        try {
+
+            outStream = new FileOutputStream(outFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+
+            imageInterface.loadGalleryImage(outFile);
+
+            Toast.makeText(context, "Loaded", Toast.LENGTH_LONG).show();
+
+        } catch (IOException e) {
+            Toast.makeText(context, "Error happened", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
 
@@ -260,6 +363,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void loadActivity(String image);
 
         void loadGalleryImage(File file);
+
+        boolean isPermissionGranted();
 
     }
 

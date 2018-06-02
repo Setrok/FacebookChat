@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.facebook.AccessToken;
 import com.facebook.AccessTokenManager;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,7 +43,7 @@ import id.zelory.compressor.Compressor;
 public class ProfileActivity extends AppCompatActivity {
 
     private static final int MAX_LENGTH = 32;
-    private TextView profileName, profileEmail;
+    private TextView profileName;
     private ImageView profileImage;
     private Button backBtn,logoutBtn;
     private ProgressBar progressBar;
@@ -61,7 +62,7 @@ public class ProfileActivity extends AppCompatActivity {
         checkIfUserLoggedIn();
 
         profileName = findViewById(R.id.profile_name);
-        profileEmail = findViewById(R.id.profile_email);
+        //profileEmail = findViewById(R.id.profile_email);
         profileImage = findViewById(R.id.settings_profile_Img);
 
         backBtn = findViewById(R.id.backToChatBtn);
@@ -98,9 +99,10 @@ public class ProfileActivity extends AppCompatActivity {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
-        String phoneNumber = currentUser.getPhoneNumber();
+//        String phoneNumber = currentUser.getPhoneNumber();
+        String userID =  AccessToken.getCurrentAccessToken().getUserId();
 
-        userDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(phoneNumber);
+        userDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
         userDatabase.keepSynced(true);
 
         userDatabase.addValueEventListener(new ValueEventListener() {
@@ -150,7 +152,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(currentUser == null){
+        if(currentUser == null || null == AccessToken.getCurrentAccessToken().getUserId()){
             setToStart();
         }
 

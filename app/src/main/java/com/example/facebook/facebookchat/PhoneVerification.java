@@ -1,7 +1,10 @@
 //ASd
 package com.example.facebook.facebookchat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -55,6 +58,7 @@ import android.widget.Toast;
 //import com.google.firebase.database.FirebaseDatabase;
 //import com.google.firebase.database.ValueEventListener;
 
+import com.facebook.AccessToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -114,7 +118,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     private Button mResendButton;
     private Button mSignOutButton;
 
-    private String name,birthday,url,email;
+    private String name,url,birthday,email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,11 +139,12 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
             name = getIntent().getStringExtra("name");
             Log.i("InfoApp","name is" + name);
         }
+
         if(getIntent().hasExtra("birthday")){
             birthday = getIntent().getStringExtra("birthday");
             Log.i("InfoApp","birthday is" + birthday);
         }
-
+//
         if(getIntent().hasExtra("email")){
             email  = getIntent().getStringExtra("email");
             Log.i("InfoApp","email is" + email);
@@ -389,11 +394,14 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                                     Log.i("InfoApp",""+dataSnapshot);
-                                    if( dataSnapshot.hasChild(currentUser.getPhoneNumber()) ){
+                                    if( dataSnapshot.hasChild(AccessToken.getCurrentAccessToken().getUserId()) ){//if( dataSnapshot.hasChild(currentUser.getPhoneNumber()) ){
 
-                                        Log.e("InfoApp","Has child Register");
-                                        Intent registerIntent = new Intent(getApplicationContext(),ChatActivity.class);
-                                        startActivity(registerIntent);
+                                        Log.e("InfoApp","Has child fbI" + AccessToken.getCurrentAccessToken().getUserId());
+                                        Log.e("InfoApp","Has child name" + name);
+                                        Log.e("InfoApp","Has child birthday" + birthday);
+                                        Log.e("InfoApp","Has child url" + url);
+
+                                        redirect();
 
                                     } else {
 
@@ -401,38 +409,51 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
                                         rootRef = FirebaseDatabase.getInstance().getReference();
 
+                                        if(null == name || null == birthday || null == url){
+                                            Toast.makeText(getApplicationContext(),"Error loading data, try again",Toast.LENGTH_LONG).show();
+                                            Log.e("InfoApp","empty values in db");
+                                            return;
+                                        }
+
                                         HashMap userMap = new HashMap<>();
 
 //                                        userMap.put(currentUser.getPhoneNumber()+"/name",name);
 //                                        userMap.put(currentUser.getPhoneNumber()+"/birthday",birthday);
 
-                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/name",name);
-                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/age",birthday);
-                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/image_url",url);
-                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/phone",currentUser.getPhoneNumber());
+//                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/name",name);
+//                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/age",birthday);
+//                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/image_url",url);
+//                                        userMap.put("Users/"+currentUser.getPhoneNumber()+"/phone",currentUser.getPhoneNumber());
+
+                                        String userID = "Users/"+ AccessToken.getCurrentAccessToken().getUserId();
+                                        userMap.put(userID+"/name",name);
+                                        userMap.put(userID+"/age",birthday);
+                                        userMap.put(userID+"/image_url",url);
+                                        userMap.put(userID+"/phone",currentUser.getPhoneNumber());
+
+
                                         if(null != email){
-                                            userMap.put("Users/"+currentUser.getPhoneNumber()+"/email",email);
+                                            userMap.put(userID+"/email",email);
                                         }
-                                        //userMap.put(user.getPhoneNumber()+"/age",age);
-                                       // userMap.put("Users/"+user.getPhoneNumber()+"/email",email);
 //
                                         rootRef.updateChildren(userMap, new DatabaseReference.CompletionListener() {
                                             @Override
                                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 
                                                 if(databaseError == null){
-                                                    Log.i("AppInfo","db updated just fine");
+                                                    Log.i("InfoApp","db updated just fine");
+
+                                                    redirect();
 
                                                 } else{
-                                                    Log.i("AppInfo",databaseError.getMessage());
+                                                    Log.i("InfoApp",databaseError.getMessage());
                                                 }
 
                                             }
                                         });
 
                                         Log.i("InfoApp","Has child main");
-                                        Intent mainIntent = new Intent(getApplicationContext(),ChatActivity.class);
-                                        startActivity(mainIntent);
+
 
                                     }
 
@@ -463,6 +484,15 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                 });
     }
 
+    private void redirect() {
+
+        Intent mainIntent = new Intent(getApplicationContext(),ChatActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainIntent);
+        finish();
+
+    }
+
     private void updateUI(int uiState) {
         updateUI(uiState, mAuth.getCurrentUser(), null);
     }
@@ -470,10 +500,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             updateUI(STATE_SIGNIN_SUCCESS, user);
-
-            Intent mainIntent = new Intent(getApplicationContext(),ChatActivity.class);
-            startActivity(mainIntent);
-            finish();
+            redirect();
         }
     }
 
@@ -574,6 +601,10 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View view) {
+
+        if(!checkNetwork())
+            return;
+
         switch (view.getId()) {
             case R.id.button_start_verification:
                 if (!validatePhoneNumber()) {
@@ -600,6 +631,28 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
             case R.id.sign_out_button:
                 signOut();
                 break;
+        }
+    }
+
+    private boolean checkNetwork() {
+        try {
+            boolean wifiDataAvailable = false;
+            boolean mobileDataAvailable = false;
+            ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo[] networkInfo = conManager.getAllNetworkInfo();
+            for (NetworkInfo netInfo : networkInfo) {
+                if (netInfo.getTypeName().equalsIgnoreCase("WIFI"))
+                    if (netInfo.isConnected())
+                        wifiDataAvailable = true;
+                if (netInfo.getTypeName().equalsIgnoreCase("MOBILE"))
+                    if (netInfo.isConnected())
+                        mobileDataAvailable = true;
+            }
+            return wifiDataAvailable || mobileDataAvailable;
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"No Internet Connection",Toast.LENGTH_LONG).show();
+            return false;
         }
     }
 

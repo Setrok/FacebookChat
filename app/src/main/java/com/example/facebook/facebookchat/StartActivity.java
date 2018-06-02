@@ -1,9 +1,13 @@
 package com.example.facebook.facebookchat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
@@ -40,15 +45,18 @@ import java.util.Arrays;
 public class StartActivity extends AppCompatActivity {
 
     CallbackManager callbackManager;
-    TextView email,birthday;
+    TextView email;
     LoginButton loginButton;
     Button logout_btn;
     ProgressBar progressBar;
     ImageView avatar;
     AccessTokenTracker accessTokenTracker;
     LoginManager manager;
-    URL profile_picture;
-    String nameStr,birthdayStr,emailStr;
+    //URL profile_picture;
+    String nameStr,picStr,birthdayStr,emailStr;
+
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +67,25 @@ public class StartActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         manager = LoginManager.getInstance();
 
+        pref = getApplicationContext().getSharedPreferences("FBPref", MODE_PRIVATE);
+        editor = pref.edit();
+
+        //if( !pref.getString("user_name","").equals("") )
+            nameStr = pref.getString("user_name","");
+        //if( !pref.getString("user_pic","").equals("") )
+            picStr = pref.getString("user_pic","");
+
+            birthdayStr = pref.getString("user_birthday","");
+
+            emailStr = pref.getString("user_email","");
+
         avatar = findViewById(R.id.profile_avatar);
         email = findViewById(R.id.profil_email);
-        birthday = findViewById(R.id.profil_birthday);
+        //birthday = findViewById(R.id.profil_birthday);
         logout_btn = findViewById(R.id.redirect_button);
 
         email.setVisibility(View.INVISIBLE);
-        birthday.setVisibility(View.INVISIBLE);
+        //birthday.setVisibility(View.INVISIBLE);
         avatar.setVisibility(View.INVISIBLE);
 
         loginButton = findViewById(R.id.login_button);
@@ -121,7 +141,7 @@ public class StartActivity extends AppCompatActivity {
 
                 //Request Graph API
                 Bundle parameters = new Bundle();
-                parameters.putString("fields","id,first_name,email,birthday");
+                parameters.putString("fields","id,first_name,last_name,birthday,email");
                 request.setParameters(parameters);
                 request.executeAsync();
 
@@ -144,6 +164,12 @@ public class StartActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        Log.i("InfoApp","OnStart triggered");
+
+        Log.e("InfoApp","On Start " + nameStr);
+        Log.e("InfoApp","On Start " + birthdayStr);
+        Log.e("InfoApp","On Start " + picStr);
+
         accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(
@@ -153,23 +179,36 @@ public class StartActivity extends AppCompatActivity {
                 if (currentAccessToken == null){
                     Log.i("AppInfo","Not logged in");
                     email.setVisibility(View.INVISIBLE);
-                    birthday.setVisibility(View.INVISIBLE);
                     avatar.setVisibility(View.INVISIBLE);
 
                 } else {
                     Log.i("AppInfo","Logged in");
                     email.setVisibility(View.VISIBLE);
-                    birthday.setVisibility(View.VISIBLE);
                     avatar.setVisibility(View.VISIBLE);
+                    email.setText(nameStr);
+                    loadImageInto(picStr);
+
+                    logout_btn.setEnabled(true);
+                    logout_btn.setVisibility(View.VISIBLE);
                     //email.setText(AccessToken.getCurrentAccessToken().getUserId());
                 }
             }
         };
 
         if(AccessToken.getCurrentAccessToken()!=null){
-            //Just set User id
-            email.setText(AccessToken.getCurrentAccessToken().getUserId());
-            //email.setText(AccessToken.getCurrentAccessToken().);
+            Log.d("AppInfo",picStr);
+            email.setVisibility(View.VISIBLE);
+            avatar.setVisibility(View.VISIBLE);
+
+            email.setText(nameStr);
+            loadImageInto(picStr);
+
+            logout_btn.setEnabled(true);
+            logout_btn.setVisibility(View.VISIBLE);
+
+        } else {
+            logout_btn.setEnabled(false);
+            logout_btn.setVisibility(View.INVISIBLE);
         }
 
 
@@ -177,22 +216,34 @@ public class StartActivity extends AppCompatActivity {
 
     private void getFacebookData(JSONObject object) {
         try{
-            profile_picture = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
-            loadImageInto(profile_picture);
+            picStr = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250").toString();
+            loadImageInto(picStr);
 
-            nameStr = object.getString("first_name");
+            nameStr = object.getString("first_name") + " " + object.getString("last_name");
             birthdayStr = object.getString("birthday");
+
+            email.setText(nameStr);
 
             try{
                 emailStr = object.getString("email");
+                editor.putString("user_email",emailStr);
             } catch (JSONException e){
-                Log.i("InfoApp","no email address");
+                e.printStackTrace();
+            } catch (Exception e){
+                e.printStackTrace();
             }
 
-            birthday.setText(nameStr);
-            email.setText(birthdayStr);
+            //birthdayStr = object.getString("birthday");
+            editor.putString("user_name",nameStr);
+            editor.putString("user_pic",picStr);
+            editor.putString("user_birthday",birthdayStr);
+            editor.commit();
 
-            //email.setText(object.getString("email"));
+            Log.e("InfoApp","Has child Register" + nameStr);
+            Log.e("InfoApp","Has child Register" + birthdayStr);
+            Log.e("InfoApp","Has child Register" + picStr);
+            //editor.putString("user_name",nameStr);
+
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -209,14 +260,12 @@ public class StartActivity extends AppCompatActivity {
     }
 
 
-    private void loadImageInto(URL url){
+    private void loadImageInto(String url){
         try{
 
-            Uri uri = Uri.parse(url.toURI().toString());
+            Uri uri = Uri.parse(url);
             Glide.with(getApplicationContext()).load(uri).into(avatar);
 
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -224,17 +273,29 @@ public class StartActivity extends AppCompatActivity {
 
     private void redirect(){
 
+        if(!checkNetwork()){
+
+        }
+
+        Log.e("InfoApp","Redirect name" + nameStr);
+        Log.e("InfoApp","Redirect birthday" + birthdayStr);
+        Log.e("InfoApp","Redirect email" + emailStr);
+        Log.e("InfoApp","Redirect pic" + picStr);
+
+
         Intent intent = new Intent(getApplicationContext(),PhoneVerification.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        if(null!=nameStr && null!= birthdayStr && null!=profile_picture) {
+        if(!nameStr.isEmpty() && !picStr.isEmpty()) {
+            Log.e("InfoApp","Redirect completed");
             intent.putExtra("name", nameStr);
             intent.putExtra("birthday", birthdayStr);
-            intent.putExtra("URL", profile_picture.toString());
+            intent.putExtra("email", emailStr);
+            intent.putExtra("URL", picStr);
         }
-        if(null != emailStr){
-            intent.putExtra("email",emailStr);
-        }
+//        if(null != emailStr){
+//            intent.putExtra("email",emailStr);
+//        }
 
         startActivity(intent);
 
@@ -260,9 +321,35 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    private boolean checkNetwork() {
+        try {
+            boolean wifiDataAvailable = false;
+            boolean mobileDataAvailable = false;
+            ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo[] networkInfo = conManager.getAllNetworkInfo();
+            for (NetworkInfo netInfo : networkInfo) {
+                if (netInfo.getTypeName().equalsIgnoreCase("WIFI"))
+                    if (netInfo.isConnected())
+                        wifiDataAvailable = true;
+                if (netInfo.getTypeName().equalsIgnoreCase("MOBILE"))
+                    if (netInfo.isConnected())
+                        mobileDataAvailable = true;
+            }
+            return wifiDataAvailable || mobileDataAvailable;
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"No Internet Connection",Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         accessTokenTracker.stopTracking();
+
     }
 }

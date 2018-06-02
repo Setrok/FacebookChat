@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 //apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.facebook.facebookchat"
         minSdkVersion 19
