@@ -63,7 +63,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
     private ProgressBar chatProgressBar;
     private LinearLayout chatInputLayout;
 
-    private TextView nameView,lastSeenView;
+    private TextView nameView,las1tSeenView;
     private EditText messageView;
     private CircleImageView profileImage;
     private ImageView onlinePic;
@@ -149,7 +149,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
         actionBar.setCustomView(acttion_bar_view);
 
         nameView = findViewById(R.id.custom_bar_name);
-        lastSeenView = findViewById(R.id.custom_bar_lastSeen);
+        //lastSeenView = findViewById(R.id.custom_bar_lastSeen);
         profileImage = findViewById(R.id.chat_profile_Pic);
         onlinePic = findViewById(R.id.custom_onlinPic);
         onlinePic.setVisibility(View.INVISIBLE);
