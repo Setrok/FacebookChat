@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: de.hdodenhof:circleimageview-2.2.0">
     <CLASSES>
-      <root url="file://C:/Users/Public/.gradle/caches/transforms-1/files-1.1/circleimageview-2.2.0.aar/b862caf98e79ad4c47acda68e0a9e018/res" />
-      <root url="jar://C:/Users/Public/.gradle/caches/transforms-1/files-1.1/circleimageview-2.2.0.aar/b862caf98e79ad4c47acda68e0a9e018/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/circleimageview-2.2.0.aar/e5dcd76cdebf67a7b4dbc9955cc0bde5/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/circleimageview-2.2.0.aar/e5dcd76cdebf67a7b4dbc9955cc0bde5/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://C:/Users/Public/.gradle/caches/modules-2/files-2.1/de.hdodenhof/circleimageview/2.2.0/58c303f955dad43f60470247ec211d646af5b4c/circleimageview-2.2.0-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.hdodenhof/circleimageview/2.2.0/58c303f955dad43f60470247ec211d646af5b4c/circleimageview-2.2.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

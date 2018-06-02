@@ -180,6 +180,8 @@ public class StartActivity extends AppCompatActivity {
                     Log.i("AppInfo","Not logged in");
                     email.setVisibility(View.INVISIBLE);
                     avatar.setVisibility(View.INVISIBLE);
+                    logout_btn.setEnabled(false);
+                    logout_btn.setVisibility(View.INVISIBLE);
 
                 } else {
                     Log.i("AppInfo","Logged in");
