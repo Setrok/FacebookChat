@@ -5,6 +5,21 @@
     <string name="text_lorem_ipsum">Lorem ipsum</string>
     <string name="contentDescription">Content Description</string>
 
+
+    <!--Confirm Phone-->
+    <string name="confirm_phone_info">We will send an SMS message to verify your phone number. \nPlease, enter your phone number:</string>
+    <string name="text_confirm_question">Confirm or you want to change the number?</string>
+    <string name="text_message_confirm">Code will be sent to this number:</string>
+    <string name="text_confirm_phone_number">+380 974938493</string>
+    <string name="text_change">Change</string>
+    <string name="text_confirm">Confirm</string>
+    <string name="text_enter_code_from_message">Enter code from message</string>
+    <string name="text_hint_verify_code">_ _ _ _ _ _</string>
+    <string name="text_resend">Resend</string>
+    <string name="text_verify">Verify</string>
+    <string name="text_update_gps">Update</string>
+    <string name="text_update_google_play_services">Update Google Play Services\nand Try Again</string>
+
     <!--MPesa-->
     <string name="myMobileNumber">My Mobile Number</string>
     <string name="button_pay">Pay</string>

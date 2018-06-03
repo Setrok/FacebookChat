@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,10 +44,12 @@ import java.util.Arrays;
 
 public class StartActivity extends AppCompatActivity {
 
+    LinearLayout layoutProfileFB;
+
     CallbackManager callbackManager;
     TextView email;
     LoginButton loginButton;
-    Button logout_btn;
+    Button continue_btn;
     ProgressBar progressBar;
     ImageView avatar;
     AccessTokenTracker accessTokenTracker;
@@ -82,7 +84,8 @@ public class StartActivity extends AppCompatActivity {
         avatar = findViewById(R.id.profile_avatar);
         email = findViewById(R.id.profil_email);
         //birthday = findViewById(R.id.profil_birthday);
-        logout_btn = findViewById(R.id.redirect_button);
+        continue_btn = findViewById(R.id.redirect_button);
+        layoutProfileFB = findViewById(R.id.layout_fb_profile);
 
         email.setVisibility(View.INVISIBLE);
         //birthday.setVisibility(View.INVISIBLE);
@@ -94,7 +97,7 @@ public class StartActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
-        logout_btn.setOnClickListener(new View.OnClickListener() {
+        continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 redirect();
@@ -180,8 +183,10 @@ public class StartActivity extends AppCompatActivity {
                     Log.i("AppInfo","Not logged in");
                     email.setVisibility(View.INVISIBLE);
                     avatar.setVisibility(View.INVISIBLE);
-                    logout_btn.setEnabled(false);
-                    logout_btn.setVisibility(View.INVISIBLE);
+                    continue_btn.setEnabled(false);
+                    continue_btn.setVisibility(View.INVISIBLE);
+                    loginButton.setVisibility(View.VISIBLE);
+                    layoutProfileFB.setVisibility(View.GONE);
 
                 } else {
                     Log.i("AppInfo","Logged in");
@@ -189,9 +194,11 @@ public class StartActivity extends AppCompatActivity {
                     avatar.setVisibility(View.VISIBLE);
                     email.setText(nameStr);
                     loadImageInto(picStr);
+                    layoutProfileFB.setVisibility(View.VISIBLE);
+                    loginButton.setVisibility(View.GONE);
 
-                    logout_btn.setEnabled(true);
-                    logout_btn.setVisibility(View.VISIBLE);
+                    continue_btn.setEnabled(true);
+                    continue_btn.setVisibility(View.VISIBLE);
                     //email.setText(AccessToken.getCurrentAccessToken().getUserId());
                 }
             }
@@ -205,12 +212,12 @@ public class StartActivity extends AppCompatActivity {
             email.setText(nameStr);
             loadImageInto(picStr);
 
-            logout_btn.setEnabled(true);
-            logout_btn.setVisibility(View.VISIBLE);
+            continue_btn.setEnabled(true);
+            continue_btn.setVisibility(View.VISIBLE);
 
         } else {
-            logout_btn.setEnabled(false);
-            logout_btn.setVisibility(View.INVISIBLE);
+            continue_btn.setEnabled(false);
+            continue_btn.setVisibility(View.INVISIBLE);
         }
 
 
@@ -276,7 +283,7 @@ public class StartActivity extends AppCompatActivity {
     private void redirect(){
 
         if(!checkNetwork()){
-
+            return;//CHECK
         }
 
         Log.e("InfoApp","Redirect name" + nameStr);
@@ -352,6 +359,21 @@ public class StartActivity extends AppCompatActivity {
         super.onDestroy();
 
         accessTokenTracker.stopTracking();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (AccessToken.getCurrentAccessToken()!=null){
+            try {
+                LoginManager.getInstance().logOut();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }else {
+            super.onBackPressed();
+        }
 
     }
 }

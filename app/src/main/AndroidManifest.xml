@@ -19,19 +19,27 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".StartActivity"/>
+        <activity android:name=".StartActivity"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".PhoneVerification" />
-        <activity android:name=".ChatActivity" >
+        <activity android:name=".PhoneVerification"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ChatActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".mpesa.MPesaActivity" />
-        <activity android:name=".ProfileActivity"></activity>
-        <activity android:name=".FullScreenImageActivity"></activity>
+        <activity android:name=".mpesa.MPesaActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ProfileActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FullScreenImageActivity"
+            android:screenOrientation="portrait"/>
     </application>
+
+    <!--android:configChanges="orientation|screenSize"-->
 
 </manifest>

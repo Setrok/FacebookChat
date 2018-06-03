@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,6 +85,19 @@ import java.util.concurrent.TimeUnit;
 
 public class PhoneVerification extends AppCompatActivity implements View.OnClickListener{
 
+    private LinearLayout layoutLogin;
+    private LinearLayout layoutVerify;
+    private LinearLayout layoutConfirm;
+    private LinearLayout layoutUpdateGPS;
+
+    private ProgressBar progressBarMain;
+    private ProgressBar progressBarButton;
+
+    private Button buttonStartVerify;
+    private Button buttonChangeNumber;
+
+    private TextView numberForConfirm;
+    private TextView codeOnNumber;
 
     private static final String TAG = "InfoApp";
 
@@ -110,13 +125,14 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     private TextView mStatusText;
     private TextView mDetailText;
 
+    private EditText mPhoneCodeField;
     private EditText mPhoneNumberField;
     private EditText mVerificationField;
 
     private Button mStartButton;
     private Button mVerifyButton;
     private Button mResendButton;
-    private Button mSignOutButton;
+//    private Button mSignOutButton;
 
     private String name,url,birthday,email;
 
@@ -155,19 +171,43 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
         mStatusText = findViewById(R.id.status);
         mDetailText = findViewById(R.id.detail);
 
+        mPhoneCodeField = findViewById(R.id.field_phone_code);
         mPhoneNumberField = findViewById(R.id.field_phone_number);
         mVerificationField = findViewById(R.id.field_verification_code);
 
         mStartButton = findViewById(R.id.button_start_verification);
         mVerifyButton = findViewById(R.id.button_verify_phone);
         mResendButton = findViewById(R.id.button_resend);
-        mSignOutButton = findViewById(R.id.sign_out_button);
+//        mSignOutButton = findViewById(R.id.sign_out_button);
+
+
+        layoutLogin = findViewById(R.id.login_layout);
+        layoutConfirm = findViewById(R.id.confirm_phone_layout);
+        layoutUpdateGPS = findViewById(R.id.update_gps_layout);
+        layoutVerify = findViewById(R.id.code_layout);
+
+        progressBarMain = findViewById(R.id.progress_bar_main);
+        progressBarButton = findViewById(R.id.progress_bar_verify);
+
+        buttonStartVerify = findViewById(R.id.verify_phone_button);
+        buttonChangeNumber = findViewById(R.id.button_change_number);
+
+        numberForConfirm = findViewById(R.id.number_for_confirm);
+        codeOnNumber = findViewById(R.id.txt_user_phone_number);
+
+        //onInit
+        goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, progressBarMain, progressBarButton);
+        visibleViews(layoutLogin);
+        disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField);
+        enableViews(buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
 
         // Assign click listeners
         mStartButton.setOnClickListener(this);
         mVerifyButton.setOnClickListener(this);
         mResendButton.setOnClickListener(this);
-        mSignOutButton.setOnClickListener(this);
+//        mSignOutButton.setOnClickListener(this);
+        buttonStartVerify.setOnClickListener(this);
+        buttonChangeNumber.setOnClickListener(this);
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
@@ -177,9 +217,11 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
         // Initialize phone auth callbacks
         // [START phone_auth_callbacks]
 
-        mPhoneNumberField.setText("+");
-        Selection.setSelection(mPhoneNumberField.getText(), mPhoneNumberField.getText().length());
-
+        if(mPhoneCodeField.equals(""))
+            mPhoneCodeField.setText("+");
+        if(mPhoneCodeField.length() >= 4)
+            mPhoneNumberField.requestFocus();
+        Selection.setSelection(mPhoneCodeField.getText(), mPhoneCodeField.getText().length());
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
@@ -214,7 +256,13 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
                     // [START_EXCLUDE]
+                    goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, progressBarMain, progressBarButton);
+                    visibleViews(layoutLogin);
+                    disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField);
+                    enableViews(buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+
                     mPhoneNumberField.setError("Invalid phone number.");
+
                     // [END_EXCLUDE]
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
@@ -251,7 +299,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
         };
         // [END phone_auth_callbacks]
 
-        mPhoneNumberField.addTextChangedListener(new TextWatcher() {
+        mPhoneCodeField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -261,7 +309,9 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                if(mPhoneCodeField.length() >= 4){
+                    mPhoneNumberField.requestFocus();
+                }
             }
 
             @Override
@@ -269,8 +319,8 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
                 if(!s.toString().startsWith("+")){
 
-                    mPhoneNumberField.setText("+");
-                    Selection.setSelection(mPhoneNumberField.getText(), mPhoneNumberField.getText().length());
+                    mPhoneCodeField.setText("+");
+                    Selection.setSelection(mPhoneCodeField.getText(), mPhoneCodeField.getText().length());
                 }
 
             }
@@ -294,7 +344,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
         // [START_EXCLUDE]
         if (mVerificationInProgress && validatePhoneNumber()) {
-            startPhoneNumberVerification(mPhoneNumberField.getText().toString());
+            startPhoneNumberVerification(mPhoneCodeField.getText().toString() + mPhoneNumberField.getText().toString());
         }
         // [END_EXCLUDE]
     }
@@ -516,27 +566,52 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
         switch (uiState) {
             case STATE_INITIALIZED:
                 // Initialized state, show only the phone number field and start button
-                enableViews(mStartButton, mPhoneNumberField);
-                disableViews(mVerifyButton, mResendButton, mVerificationField);
+//                enableViews(mStartButton, mPhoneCodeField, mPhoneNumberField);
+//                disableViews(mVerifyButton, mResendButton, mVerificationField);
+
+                goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, progressBarMain, progressBarButton);
+                visibleViews(layoutLogin);
+                disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField);
+                enableViews(buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+
                 mDetailText.setText(null);
                 break;
             case STATE_CODE_SENT:
                 // Code sent state, show the verification field, the
-                enableViews(mVerifyButton, mResendButton, mPhoneNumberField, mVerificationField);
-                disableViews(mStartButton);
+//                enableViews(mVerifyButton, mResendButton, mPhoneCodeField, mPhoneNumberField, mVerificationField);
+//                disableViews(mStartButton);
+
+                goneViews(layoutLogin, layoutConfirm, layoutUpdateGPS, progressBarMain, progressBarButton);
+                visibleViews(layoutVerify);
+                disableViews(mStartButton, buttonChangeNumber, buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+                enableViews(mVerifyButton, mResendButton, mVerificationField);
+
                 mDetailText.setText("Code sent");
                 break;
             case STATE_VERIFY_FAILED:
                 // Verification has failed, show all options
-                enableViews(mStartButton, mVerifyButton, mResendButton, mPhoneNumberField,
-                        mVerificationField);
-                mDetailText.setText("Verification failed");
+//                enableViews(mStartButton, mVerifyButton, mResendButton, mPhoneCodeField, mPhoneNumberField,
+//                        mVerificationField);
+//                mDetailText.setText("Verification failed");
+
+                goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, progressBarMain, progressBarButton);
+                visibleViews(layoutLogin);
+                disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField);
+                enableViews(buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+
+                Toast.makeText(this, "Verification failed, please, try again", Toast.LENGTH_LONG).show();
+
                 break;
             case STATE_VERIFY_SUCCESS:
                 // Verification has succeeded, proceed to firebase sign in
-                disableViews(mStartButton, mVerifyButton, mResendButton, mPhoneNumberField,
-                        mVerificationField);
+//                disableViews(mStartButton, mVerifyButton, mResendButton, mPhoneCodeField, mPhoneNumberField,
+//                        mVerificationField);
                 mDetailText.setText("Verification success");
+
+                goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, layoutLogin, progressBarButton);
+                visibleViews(progressBarMain);
+                disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField, buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+                enableViews();
 
                 // Set the verification text based on the credential
                 if (cred != null) {
@@ -569,6 +644,7 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
             //mSignedInViews.setVisibility(View.VISIBLE);
 
             enableViews(mPhoneNumberField, mVerificationField);
+            mPhoneCodeField.setText("+");
             mPhoneNumberField.setText(null);
             mVerificationField.setText(null);
 
@@ -578,9 +654,16 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     }
 
     private boolean validatePhoneNumber() {
-        String phoneNumber = mPhoneNumberField.getText().toString();
+        String phoneNumber = mPhoneCodeField.getText().toString() + mPhoneNumberField.getText().toString();
         if (TextUtils.isEmpty(phoneNumber) || phoneNumber.equals("+")) {
+
+            goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, progressBarMain, progressBarButton);
+            visibleViews(layoutLogin);
+            disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField);
+            enableViews(buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+
             mPhoneNumberField.setError("Invalid phone number.");
+
             return false;
         }
 
@@ -599,6 +682,18 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
         }
     }
 
+    private void visibleViews(View... views) {
+        for (View v : views) {
+            v.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void goneViews(View... views) {
+        for (View v : views) {
+            v.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onClick(View view) {
 
@@ -612,8 +707,13 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                     return;
                 }
 
+                goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, layoutLogin, progressBarButton);
+                visibleViews(progressBarMain);
+                disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField, buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+                enableViews();
+
                 Log.i("InfoApp","Tapped send button");
-                startPhoneNumberVerification(mPhoneNumberField.getText().toString());
+                startPhoneNumberVerification(mPhoneCodeField.getText().toString() + mPhoneNumberField.getText().toString());
                 break;
             case R.id.button_verify_phone:
                 String code = mVerificationField.getText().toString();
@@ -626,10 +726,29 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.button_resend:
                 //fillTestData();
-                resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
+                resendVerificationCode(mPhoneCodeField.getText().toString() + mPhoneNumberField.getText().toString(), mResendToken);
                 break;
-            case R.id.sign_out_button:
-                signOut();
+//            case R.id.sign_out_button:
+//                signOut();
+//                break;
+            case R.id.button_change_number:
+
+                goneViews(layoutVerify, layoutConfirm, layoutUpdateGPS, progressBarMain, progressBarButton);
+                visibleViews(layoutLogin);
+                disableViews(mStartButton, mVerifyButton, mResendButton, buttonChangeNumber, mVerificationField);
+                enableViews(buttonStartVerify, mPhoneCodeField, mPhoneNumberField);
+
+                break;
+            case R.id.verify_phone_button:
+
+                numberForConfirm.setText(mPhoneCodeField.getText().toString() + " " + mPhoneNumberField.getText().toString());
+                codeOnNumber.setText(mPhoneCodeField.getText().toString() + " " + mPhoneNumberField.getText().toString());
+
+                goneViews(layoutLogin, layoutVerify, layoutUpdateGPS);
+                visibleViews(layoutConfirm);
+                disableViews(mStartButton, mVerifyButton, mResendButton, mPhoneCodeField, buttonStartVerify, mPhoneNumberField, mVerificationField);
+                enableViews(buttonChangeNumber, mStartButton);
+
                 break;
         }
     }
