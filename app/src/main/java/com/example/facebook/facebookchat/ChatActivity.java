@@ -711,8 +711,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
         }
     }
 
-    @Override
-    public void onBackPressed() {
-
-    }
+//    @Override
+//    public void onBackPressed() {
+//
+//    }
 }

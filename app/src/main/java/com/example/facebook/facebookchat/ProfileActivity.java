@@ -71,7 +71,10 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Intent chatIntent = new Intent(getApplicationContext(),ChatActivity.class);
+                chatIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                chatIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(chatIntent);
+                finish();
 
             }
         });

@@ -283,6 +283,7 @@ public class StartActivity extends AppCompatActivity {
     private void redirect(){
 
         if(!checkNetwork()){
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
             return;//CHECK
         }
 
