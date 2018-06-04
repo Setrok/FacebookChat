@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.facebook.facebookchat.ChatActivity;
+import com.facebook.AccessToken;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,7 +38,7 @@ public class MPESAMessagingService extends FirebaseMessagingService {
     //Searches FireBase
     private DatabaseReference userRef;
     private int payments_counter = -1;
-    private FirebaseUser currentUser;
+    private String currentUser;
 
     private static final String TAG = "MPESAMessagingService";
 
@@ -163,9 +164,9 @@ public class MPESAMessagingService extends FirebaseMessagingService {
     private void addSearches(final int searches){
 
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = AccessToken.getCurrentAccessToken().getUserId();
 
-        userRef.child(currentUser.getPhoneNumber()).addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.child(currentUser).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -173,7 +174,7 @@ public class MPESAMessagingService extends FirebaseMessagingService {
 
                     payments_counter = Integer.parseInt(dataSnapshot.child("search_left").getValue().toString());
                     payments_counter += searches;
-                    userRef.child(currentUser.getPhoneNumber()).child("search_left").setValue(payments_counter).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    userRef.child(currentUser).child("search_left").setValue(payments_counter).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
 
@@ -190,7 +191,7 @@ public class MPESAMessagingService extends FirebaseMessagingService {
                     });
 
                 }   catch (NullPointerException e){
-                    userRef.child(currentUser.getPhoneNumber()).child("search_left").setValue(0);
+                    userRef.child(currentUser).child("search_left").setValue(0);
                     e.printStackTrace();
                 } catch (Exception e){
                     e.printStackTrace();

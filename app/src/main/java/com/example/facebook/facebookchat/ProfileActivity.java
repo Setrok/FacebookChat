@@ -43,7 +43,7 @@ import id.zelory.compressor.Compressor;
 public class ProfileActivity extends AppCompatActivity {
 
     private static final int MAX_LENGTH = 32;
-    private TextView profileName;
+    private TextView profileName,profileBirthday,profileEmail,profilePhone;
     private ImageView profileImage;
     private Button backBtn,logoutBtn;
     private ProgressBar progressBar;
@@ -61,9 +61,11 @@ public class ProfileActivity extends AppCompatActivity {
 
         checkIfUserLoggedIn();
 
-        profileName = findViewById(R.id.profile_name);
-        //profileEmail = findViewById(R.id.profile_email);
         profileImage = findViewById(R.id.settings_profile_Img);
+        profileName = findViewById(R.id.profile_name);
+        profileBirthday = findViewById(R.id.profile_birthday);
+        profilePhone = findViewById(R.id.profile_phone);
+        profileEmail = findViewById(R.id.profile_email);
 
         backBtn = findViewById(R.id.backToChatBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -108,19 +110,22 @@ public class ProfileActivity extends AppCompatActivity {
         userDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
         userDatabase.keepSynced(true);
 
-        userDatabase.addValueEventListener(new ValueEventListener() {
+        userDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 try {
 
                     String name = dataSnapshot.child("name").getValue().toString();
-                    //String email = dataSnapshot.child("email").getValue().toString();
+                    String birthday = dataSnapshot.child("age").getValue().toString();
+                    String email = dataSnapshot.child("email").getValue().toString();
                     String phone = dataSnapshot.child("phone").getValue().toString();
                     String image_url = dataSnapshot.child("image_url").getValue().toString();
 
                     profileName.setText(name);
-                    //profileEmail.setText(email);
+                    profileBirthday.setText(birthday);
+                    profilePhone.setText(phone);
+                    profileEmail.setText(email);
                     if(null!=image_url) {
 
                         //Picasso.with(SettingsActivity.this).load(image).placeholder(R.drawable.default_user).into(profileImage);

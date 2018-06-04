@@ -36,26 +36,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settings_profile_Img" />
 
+
+    <TextView
+        android:id="@+id/profile_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/display_name"
+        android:textColor="@color/white_greyish"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_birthday" />
+
+    <TextView
+        android:id="@+id/profile_birthday"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/display_name"
+        android:textColor="@color/white_greyish"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
+
     <TextView
         android:id="@+id/profile_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:paddingEnd="20dp"
-        android:paddingStart="20dp"
-        android:text=""
-        android:textAlignment="center"
+        android:text="@string/display_name"
+        android:textColor="@color/white_greyish"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
-
+        app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
 
     <Button
         android:id="@+id/backToChatBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"
-        android:layout_marginTop="8dp"
         android:backgroundTint="@color/colorAccent"
         android:minWidth="140dp"
         android:paddingBottom="15dp"
@@ -70,8 +95,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/profile_logout_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_email" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/profile_logout_btn"

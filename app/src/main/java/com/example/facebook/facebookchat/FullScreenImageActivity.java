@@ -37,8 +37,6 @@ public class FullScreenImageActivity extends AppCompatActivity {
 
     public void loadImageInto(Context context, String image, ImageView circleImageView){
 
-        //Picasso.with(context).load(image).placeholder(R.drawable.default_user).into(circleImageView);
-
         Log.i("InfoApp","Image is loading");
 
         Glide.with(context)

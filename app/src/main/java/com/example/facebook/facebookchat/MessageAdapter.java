@@ -79,7 +79,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //        currentUserId = mAuth.getCurrentUser().getUid();
         final Messages c = mMessageList.get(position);
 
-        String fromUser = c.getFrom();
+        final String fromUser = c.getFrom();
         String messageType = c.getType();
         String name = c.getName();
         String image = c.getProfilePic();
@@ -93,6 +93,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             messageViewHolder.nameText.setText(name);
             messageViewHolder.timeText.setText(messageTime);
             loadImageInto(messageViewHolder.userPic.getContext(), image, messageViewHolder.userPic);
+
+            messageViewHolder.userPic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    imageInterface.loadUserProfile(fromUser);
+
+                }
+            });
+
 
             if (messageType.equals("text")) {
                 messageViewHolder.messageText.setVisibility(View.VISIBLE);
@@ -137,31 +147,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                                     }
 
-//                                    BitmapDrawable draw = (BitmapDrawable) messageViewHolderUser.messageImage.getDrawable();
-//                                    Bitmap bitmap = draw.getBitmap();
-
-//                                    FileOutputStream outStream = null;
-//                                    File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-//                                    String fileName = String.format(Locale.US, "%d.jpg", System.currentTimeMillis());
-//                                    File outFile = new File(storageLoc, fileName);
-//                                    try {
-//
-//                                        outStream = new FileOutputStream(outFile);
-//                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-//                                        outStream.flush();
-//                                        outStream.close();
-//
-//                                        imageInterface.loadGalleryImage(outFile);
-//
-//                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Loaded", Toast.LENGTH_LONG).show();
-//
-//                                    } catch (IOException e) {
-//                                        Toast.makeText(messageViewHolderUser.messageImage.getContext(), "Error happened", Toast.LENGTH_LONG).show();
-//                                        e.printStackTrace();
-//                                    }
-
-
-                                    Log.i("InfoApp", "Nice");
                                 }
 
 
@@ -365,6 +350,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void loadGalleryImage(File file);
 
         boolean isPermissionGranted();
+
+        void loadUserProfile(String userID);
 
     }
 

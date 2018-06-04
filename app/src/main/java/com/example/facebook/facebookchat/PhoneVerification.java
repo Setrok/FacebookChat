@@ -3,6 +3,7 @@ package com.example.facebook.facebookchat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -136,6 +137,9 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
     private String name,url,birthday,email;
 
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,24 +151,37 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
         // Assign views
 
-        if(getIntent().hasExtra("URL")){
-            url = getIntent().getStringExtra("URL");
-            Log.i("InfoApp","url is" + url);
-        }
-        if(getIntent().hasExtra("name")){
-            name = getIntent().getStringExtra("name");
-            Log.i("InfoApp","name is" + name);
-        }
-
-        if(getIntent().hasExtra("birthday")){
-            birthday = getIntent().getStringExtra("birthday");
-            Log.i("InfoApp","birthday is" + birthday);
-        }
+//        if(getIntent().hasExtra("URL")){
+//            url = getIntent().getStringExtra("URL");
+//            Log.i("InfoApp","url is" + url);
+//        }
+//        if(getIntent().hasExtra("name")){
+//            name = getIntent().getStringExtra("name");
+//            Log.i("InfoApp","name is" + name);
+//        }
 //
-        if(getIntent().hasExtra("email")){
-            email  = getIntent().getStringExtra("email");
-            Log.i("InfoApp","email is" + email);
-        }
+//        if(getIntent().hasExtra("birthday")){
+//            birthday = getIntent().getStringExtra("birthday");
+//            Log.i("InfoApp","birthday is" + birthday);
+//        }
+////
+//        if(getIntent().hasExtra("email")){
+//            email  = getIntent().getStringExtra("email");
+//            Log.i("InfoApp","email is" + email);
+//        }
+
+        pref = getApplicationContext().getSharedPreferences("FBPref", MODE_PRIVATE);
+        editor = pref.edit();
+
+        name = pref.getString("user_name","");
+        //if( !pref.getString("user_pic","").equals("") )
+        url = pref.getString("user_pic","");
+
+        birthday = pref.getString("user_birthday","");
+
+        email = pref.getString("user_email","");
+
+        Log.w("InfoApp","email from verification preferance is " + email);
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
@@ -444,22 +461,12 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                                     Log.i("InfoApp",""+dataSnapshot);
-                                    if( dataSnapshot.hasChild(AccessToken.getCurrentAccessToken().getUserId()) ){//if( dataSnapshot.hasChild(currentUser.getPhoneNumber()) ){
-
-                                        Log.e("InfoApp","Has child fbI" + AccessToken.getCurrentAccessToken().getUserId());
-                                        Log.e("InfoApp","Has child name" + name);
-                                        Log.e("InfoApp","Has child birthday" + birthday);
-                                        Log.e("InfoApp","Has child url" + url);
-
-                                        redirect();
-
-                                    } else {
 
                                         Log.e("InfoApp","Entered no child condition");
 
                                         rootRef = FirebaseDatabase.getInstance().getReference();
 
-                                        if(null == name || null == birthday || null == url){
+                                        if( name.isEmpty() || birthday.isEmpty() || url.isEmpty()){
                                             Toast.makeText(getApplicationContext(),"Error loading data, try again",Toast.LENGTH_LONG).show();
                                             Log.e("InfoApp","empty values in db");
                                             return;
@@ -507,8 +514,6 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
 
                                     }
 
-                                }
-
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
 
@@ -535,6 +540,12 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
     }
 
     private void redirect() {
+
+        editor.clear().apply();
+
+        Log.w("InfoApp","email after redirect" + pref.getString("user_email",""));
+
+        //getApplicationContext().getSharedPreferences("FBPref", MODE_PRIVATE).edit().apply();
 
         Intent mainIntent = new Intent(getApplicationContext(),ChatActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

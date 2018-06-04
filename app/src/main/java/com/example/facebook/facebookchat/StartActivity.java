@@ -71,6 +71,7 @@ public class StartActivity extends AppCompatActivity {
 
         pref = getApplicationContext().getSharedPreferences("FBPref", MODE_PRIVATE);
         editor = pref.edit();
+//        editor.clear().apply();
 
         //if( !pref.getString("user_name","").equals("") )
             nameStr = pref.getString("user_name","");
@@ -80,6 +81,8 @@ public class StartActivity extends AppCompatActivity {
             birthdayStr = pref.getString("user_birthday","");
 
             emailStr = pref.getString("user_email","");
+
+            //Log.w("InfoApp","name from preferance" + nameStr);
 
         avatar = findViewById(R.id.profile_avatar);
         email = findViewById(R.id.profil_email);
@@ -296,15 +299,12 @@ public class StartActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(),PhoneVerification.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        if(!nameStr.isEmpty() && !picStr.isEmpty()) {
-            Log.e("InfoApp","Redirect completed");
-            intent.putExtra("name", nameStr);
-            intent.putExtra("birthday", birthdayStr);
-            intent.putExtra("email", emailStr);
-            intent.putExtra("URL", picStr);
-        }
-//        if(null != emailStr){
-//            intent.putExtra("email",emailStr);
+//        if(!nameStr.isEmpty() && !picStr.isEmpty()) {
+//            Log.e("InfoApp","Redirect completed");
+//            intent.putExtra("name", nameStr);
+//            intent.putExtra("birthday", birthdayStr);
+//            intent.putExtra("email", emailStr);
+//            intent.putExtra("URL", picStr);
 //        }
 
         startActivity(intent);

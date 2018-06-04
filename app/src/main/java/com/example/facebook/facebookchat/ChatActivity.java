@@ -653,6 +653,15 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
     }
 
     @Override
+    public void loadUserProfile(String userID) {
+
+        Intent viewProfileIntent = new Intent(getApplicationContext(),ViewProfile.class);
+        viewProfileIntent.putExtra("userID",userID);
+        startActivity(viewProfileIntent);
+
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
