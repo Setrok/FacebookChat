@@ -44,7 +44,8 @@
         <activity
             android:name=".FullScreenImageActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ViewProfile"></activity>
+        <activity android:name=".ViewProfile"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

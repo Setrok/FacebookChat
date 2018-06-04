@@ -32,7 +32,7 @@
             android:id="@+id/message_single_user_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="60dp"
+            android:layout_marginEnd="80dp"
             android:layout_marginStart="8dp"
             android:background="@drawable/message_incoming_text_bg"
             android:padding="8dp"

@@ -439,9 +439,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
             String pushID = user_message_push.getKey();
 
+            String nameOfUser = chatUserName.trim().split(" ")[0];
+
+//            Log.w("GLOBAL CHAT NAME",""+nameOfUser);
+
             Map messageMap = new HashMap();
             messageMap.put("message",message);
-            messageMap.put("name",chatUserName);
+            messageMap.put("name",nameOfUser);
             messageMap.put("profilePic",chatUserPic);
             messageMap.put("type","text");
             messageMap.put("time",ServerValue.TIMESTAMP);
@@ -542,9 +546,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
                     String downloadUrl = task.getResult().getDownloadUrl().toString();
 
+                    String nameOfUser = chatUserName.trim().split(" ")[0];
+
                     Map messageMap = new HashMap();
                     messageMap.put("message", downloadUrl);
-                    messageMap.put("name",chatUserName);
+                    messageMap.put("name",nameOfUser);
                     messageMap.put("profilePic",chatUserPic);
                     messageMap.put("type", "image");
                     messageMap.put("time", ServerValue.TIMESTAMP);
