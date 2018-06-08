@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -106,7 +107,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        checkIfUserLoggedIn();
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        if(!checkIfUserLoggedIn()) return;
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -204,7 +207,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 //                data[0] = chatUserPic;
 //                data[1] = chatUserName;
 
-                mAdapter = new MessageAdapter(messageList,ChatActivity.this);
+                mAdapter = new MessageAdapter(messageList, ChatActivity.this);
                 mMessagesList.setAdapter(mAdapter);
                 //loadMessages();
                 loadMessagesLast(true);
@@ -227,7 +230,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 //                }
 
 //                loadImageInto("https://graph.facebook.com/599979763700408/picture?width=250&height=250",profileImage);
-                loadImageInto(chatUserPic,profileImage);
+                loadImageInto(chatUserPic, profileImage);
 
 
             }
@@ -237,7 +240,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
             }
         });
-
 //        if(currentUser!=null) {
 //
 //            rootRef.child("Chat").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
@@ -674,13 +676,15 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
         }
     }
 
-    private void checkIfUserLoggedIn() {
+    private boolean checkIfUserLoggedIn() {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if(currentUser == null || null == AccessToken.getCurrentAccessToken().getUserId()){
             setToStart();
+            return false;
         }
+        else return true;
 
     }
 

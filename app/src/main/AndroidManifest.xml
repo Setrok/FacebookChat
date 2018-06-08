@@ -28,6 +28,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ChatActivity"
+        android:windowSoftInputMode="stateHidden|adjustPan"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,3 +49,5 @@
     </application>
 
 </manifest>
+
+    <!--android:windowSoftInputMode="stateHidden|adjustResize"-->
