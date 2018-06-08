@@ -32,16 +32,21 @@ public class ViewProfile extends AppCompatActivity {
 
     private TextView profileName,profileBirthday,profileEmail,profilePhone;
     private ImageView profileImage;
-    private Button backBtn,viewPhoneBtn;
+    private Button viewPhoneBtn;
+    private ImageView backBtn;
     private ProgressBar progressBar;
 
     private DatabaseReference userDatabase;
     private DatabaseReference userRef;
     private int payments_counter;
+
+    private TextView countOfViews;
 //    private FirebaseUser currentUser;
 //    private StorageReference mImageStorage;
 
     private static final int GALLERY_INTENT_CODE = 1;
+
+    private String PHONE_NUMBER = "Phone: XXXXXX";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +68,9 @@ public class ViewProfile extends AppCompatActivity {
         profileBirthday = findViewById(R.id.view_profile_birthday);
         profileEmail = findViewById(R.id.view_profile_email);
         profilePhone = findViewById(R.id.view_profile_phone);
+        countOfViews = findViewById(R.id.count_of_views);
+        profileBirthday.setVisibility(View.GONE);
         profileEmail.setVisibility(View.GONE);
-        profilePhone.setVisibility(View.GONE);
 
         backBtn = findViewById(R.id.view_backToChatBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +112,8 @@ public class ViewProfile extends AppCompatActivity {
 
                     profileName.setText(name);
                     profileBirthday.setText(birthday);
-                    profilePhone.setText(phone);
+                    profilePhone.setText("Phone: XXXXXX");
+                    PHONE_NUMBER = "Phone: "+phone;
                     if(!email.isEmpty()) {
                         profileEmail.setText(email);
                         profileEmail.setVisibility(View.VISIBLE);
@@ -173,6 +180,7 @@ public class ViewProfile extends AppCompatActivity {
                         payments_counter = Integer.parseInt(dataSnapshot.child("search_left").getValue().toString());
 
                     //searches_left.setText("Searches left: " + payments_counter);
+                    countOfViews.setText("You have "+payments_counter+" views");
 
                 }catch (NumberFormatException | NullPointerException e){
                     userRef.child(currentUserID).child("search_left").setValue(0);
@@ -240,6 +248,7 @@ public class ViewProfile extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
 
+                                profilePhone.setText(PHONE_NUMBER);
                                 profilePhone.setVisibility(View.VISIBLE);
 
 //                                Intent searchProfileIntent = new Intent(SearchActivity.this,SearchPrifileActivity.class);
