@@ -65,7 +65,7 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        //printKeyHash();
+//        printKeyHash();
         callbackManager = CallbackManager.Factory.create();
         manager = LoginManager.getInstance();
 
@@ -299,6 +299,16 @@ public class StartActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(),PhoneVerification.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+//                Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET|
+//                Intent.FLAG_ACTIVITY_TASK_ON_HOME
+
+//                Intent.FLAG_ACTIVITY_NEW_TASK|
+//                Intent.FLAG_ACTIVITY_SINGLE_TOP|
+//                Intent.FLAG_ACTIVITY_CLEAR_TOP|
+//                Intent.FLAG_ACTIVITY_NO_HISTORY|
+//                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|
+//                Intent.FLAG_ACTIVITY_CLEAR_TASK|
+
 //        if(!nameStr.isEmpty() && !picStr.isEmpty()) {
 //            Log.e("InfoApp","Redirect completed");
 //            intent.putExtra("name", nameStr);
@@ -308,6 +318,7 @@ public class StartActivity extends AppCompatActivity {
 //        }
 
         startActivity(intent);
+        finish();
 
         //manager.logOut();
 

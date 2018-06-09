@@ -95,7 +95,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
     private int itemPos = 0;
     private boolean loaded = false;
 
-    int messageIncrement = 5;
+    int messageIncrement = 15;
     private String lastKey = "",previousKey="prev";
 
     private static final int GALLERY_PICK = 1;
