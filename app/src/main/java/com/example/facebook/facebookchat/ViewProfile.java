@@ -116,7 +116,7 @@ public class ViewProfile extends AppCompatActivity {
                     PHONE_NUMBER = "Phone: "+phone;
                     if(!email.isEmpty()) {
                         profileEmail.setText(email);
-                        profileEmail.setVisibility(View.VISIBLE);
+//                        profileEmail.setVisibility(View.VISIBLE);
                     }
                     //profileEmail.setText(email);
                     if(null!=image_url) {
@@ -250,7 +250,8 @@ public class ViewProfile extends AppCompatActivity {
 
                                 profilePhone.setText(PHONE_NUMBER);
                                 profilePhone.setVisibility(View.VISIBLE);
-
+                                viewPhoneBtn.setVisibility(View.GONE);
+                                countOfViews.setVisibility(View.GONE);
 //                                Intent searchProfileIntent = new Intent(SearchActivity.this,SearchPrifileActivity.class);
 //                                searchProfileIntent.putExtra("search_phone",searchPhone);
 //                                startActivity(searchProfileIntent);

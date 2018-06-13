@@ -66,6 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileBirthday = findViewById(R.id.profile_birthday);
         profilePhone = findViewById(R.id.profile_phone);
         profileEmail = findViewById(R.id.profile_email);
+        profileEmail.setVisibility(View.GONE);
 
         backBtn = findViewById(R.id.backToChatBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -123,9 +124,12 @@ public class ProfileActivity extends AppCompatActivity {
                     String image_url = dataSnapshot.child("image_url").getValue().toString();
 
                     profileName.setText(name);
-                    profileBirthday.setText(birthday);
-                    profilePhone.setText(phone);
-                    profileEmail.setText(email);
+                    profileBirthday.setText("Date of birth: "+birthday);
+                    profilePhone.setText("Phone: "+phone);
+                    if (!email.isEmpty()){
+                        profileEmail.setText("Email: "+email);
+                        profileEmail.setVisibility(View.VISIBLE);
+                    }
                     if(null!=image_url) {
 
                         //Picasso.with(SettingsActivity.this).load(image).placeholder(R.drawable.default_user).into(profileImage);

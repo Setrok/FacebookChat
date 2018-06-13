@@ -23,8 +23,9 @@
     <!--MPesa-->
     <string name="myMobileNumber">My Mobile Number</string>
     <string name="button_pay">Pay</string>
-    <string name="text_kes_for_searches">1 Search = 50 KES</string>
+    <string name="text_kes_for_searches">1 View = 50 KES</string>
     <string name="text_amount_kes">Amount (KES)</string>
+    <string name="text_number_of_views">Number of views</string>
     <string name="text_transaction_cancelled">Transaction cancelled.</string>
     <string name="text_message_transaction_was_cancelled">Your transaction was cancelled.</string>
     <string name="button_ok">OK</string>

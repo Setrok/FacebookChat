@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,14 +38,14 @@ import com.example.facebook.facebookchat.R;
 
 public class MPesaActivity extends AppCompatActivity implements AuthListener, MpesaListener {
     //TODO: Replace these values from
-    public static final String BUSINESS_SHORT_CODE = "855310";//"174379";
-    public static final String PASSKEY = "b4168f9de4b8537042929f959db5ca90743132bc13ce5ca22c8561bffa1c968e";//"bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
-    public static final String CONSUMER_KEY = "OsIF56jn5C0w1gJ2Y5BABeomZuIqAkBk";//"AOti7P1rEdnLwTKMIDqDrRcGAlJALnz5";
-    public static final String CONSUMER_SECRET = "zx4ndweH1db32OSM";//"Tzf8r1P1WBegxgYp";
+    public static final String BUSINESS_SHORT_CODE = "174379";// "855310";//"174379";
+    public static final String PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";// "b4168f9de4b8537042929f959db5ca90743132bc13ce5ca22c8561bffa1c968e";//"bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+    public static final String CONSUMER_KEY = "AOti7P1rEdnLwTKMIDqDrRcGAlJALnz5";// "OsIF56jn5C0w1gJ2Y5BABeomZuIqAkBk";//"AOti7P1rEdnLwTKMIDqDrRcGAlJALnz5";
+    public static final String CONSUMER_SECRET = "Tzf8r1P1WBegxgYp";// "zx4ndweH1db32OSM";//"Tzf8r1P1WBegxgYp";
     public static final String CALLBACK_URL = "http://skillbar.esy.es/mpesa/mpesa.php";
 
     public static final String NOTIFICATION = "PushNotification";
-    public static final String SHARED_PREFERENCES = "com.statuslove";
+    public static final String SHARED_PREFERENCES = "com.example.facebook.facebookchat";
 
     public static final Integer PRICE_OF_SEARCH = 1;
 
@@ -88,30 +90,67 @@ public class MPesaActivity extends AppCompatActivity implements AuthListener, Mp
         resultImage = (ImageView) findViewById(R.id.mpesa_image_result);
         mainProgressBar = (ProgressBar) findViewById(R.id.mpesa_main_progress_bar);
 
-        mpesaPriceOfSearch.setText("1 Search  =  "+PRICE_OF_SEARCH+" KES");
+        mpesaPriceOfSearch.setText("1 View  =  "+PRICE_OF_SEARCH+" KES");
 
-        Mpesa.with(this, CONSUMER_KEY, CONSUMER_SECRET, Mode.PRODUCTION);//Mode.SANDBOX
+        Mpesa.with(this, CONSUMER_KEY, CONSUMER_SECRET, Mode.SANDBOX);//Mode.PRODUCTION
         dialog = new ProgressDialog(this);
         dialog.setMessage("Processing");
         dialog.setIndeterminate(true);
 
 
         //FONTS
-        AssetLoader.loadAssets(this);
-
-        pay.setTypeface(AssetLoader.getMainBoldFont());
-        dialogOk.setTypeface(AssetLoader.getMainBoldFont());
-        resultTitle.setTypeface(AssetLoader.getMainBoldFont());
-        mpesaPriceOfSearch.setTypeface(AssetLoader.getMainBoldFont());
-        resultDesc.setTypeface(AssetLoader.getMainFont());
-        mpesaMessage.setTypeface(AssetLoader.getMainFont());
-        phone.setTypeface(AssetLoader.getMainFont());
-        amount.setTypeface(AssetLoader.getMainFont());
+//        AssetLoader.loadAssets(this);
+//
+//        pay.setTypeface(AssetLoader.getMainBoldFont());
+//        dialogOk.setTypeface(AssetLoader.getMainBoldFont());
+//        resultTitle.setTypeface(AssetLoader.getMainBoldFont());
+//        mpesaPriceOfSearch.setTypeface(AssetLoader.getMainBoldFont());
+//        resultDesc.setTypeface(AssetLoader.getMainFont());
+//        mpesaMessage.setTypeface(AssetLoader.getMainFont());
+//        phone.setTypeface(AssetLoader.getMainFont());
+//        amount.setTypeface(AssetLoader.getMainFont());
 
 
         //on init
         goneViews(resultDialog,mainProgressBar,mpesaMessageLayout);
         visibleViews(mpesaMainLayout,mpesaInputLayout);
+
+        amount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if (!amount.getText().toString().isEmpty()) {
+
+                    try {
+
+                        Integer amInt = Integer.parseInt(amount.getText().toString());
+
+                        if (amInt > 1)
+                            mpesaPriceOfSearch.setText(amInt + " Views  =  " + (amInt * PRICE_OF_SEARCH) + " KES");
+                        else
+                            mpesaPriceOfSearch.setText(amInt + " View  =  " + (amInt * PRICE_OF_SEARCH) + " KES");
+
+                    } catch (Exception e) {
+                        amount.setError("Too large");//a>2147483600
+                    }
+
+                }else {
+                    mpesaPriceOfSearch.setText("1 View  =  "+PRICE_OF_SEARCH+" KES");
+                    amount.setError("Empty field");
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,6 +159,8 @@ public class MPesaActivity extends AppCompatActivity implements AuthListener, Mp
                 String am = amount.getText().toString();
 
                 if (!am.isEmpty()) {
+
+                    am = ""+Integer.parseInt(amount.getText().toString()) * PRICE_OF_SEARCH;
 
                     try {
 
@@ -142,7 +183,7 @@ public class MPesaActivity extends AppCompatActivity implements AuthListener, Mp
 
 
                 }else {
-                    amount.setError("Empty amount");
+                    amount.setError("Empty field");
 //                    Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
 
                 }
