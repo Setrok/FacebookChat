@@ -42,7 +42,7 @@ public class MPesaActivity extends AppCompatActivity implements AuthListener, Mp
     public static final String PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";// "b4168f9de4b8537042929f959db5ca90743132bc13ce5ca22c8561bffa1c968e";//"bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
     public static final String CONSUMER_KEY = "AOti7P1rEdnLwTKMIDqDrRcGAlJALnz5";// "OsIF56jn5C0w1gJ2Y5BABeomZuIqAkBk";//"AOti7P1rEdnLwTKMIDqDrRcGAlJALnz5";
     public static final String CONSUMER_SECRET = "Tzf8r1P1WBegxgYp";// "zx4ndweH1db32OSM";//"Tzf8r1P1WBegxgYp";
-    public static final String CALLBACK_URL = "http://skillbar.esy.es/mpesa/mpesa.php";
+    public static final String CALLBACK_URL = "http://skillbar.esy.es/mpesa2/mpesa.php";
 
     public static final String NOTIFICATION = "PushNotification";
     public static final String SHARED_PREFERENCES = "com.example.facebook.facebookchat";

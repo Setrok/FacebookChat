@@ -424,12 +424,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
     private void sendMessage() {
 
-        if(!checkNetwork())
-        return;
+        if(!checkNetwork()) {
+            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        String message = messageView.getText().toString();
+        String message = messageView.getText().toString().trim();
 
-        if(!TextUtils.isEmpty(message)){
+        if(message.trim().length() != 0){
 
 //            String currentUserRef = "messages/" + currentUser.getUid() + "/" + chatUserId;
 //            String chatUserRef = "messages/" + chatUserId + "/" + currentUser.getUid();
@@ -476,6 +478,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
                 }
             });
 
+        }else {
+
+            Toast.makeText(getApplicationContext(), "Empty Massage", Toast.LENGTH_LONG).show();
+
         }
 
     }
@@ -493,6 +499,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(!checkNetwork())
+            return;
 
         if(requestCode == GALLERY_PICK && resultCode ==RESULT_OK){
 
