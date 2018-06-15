@@ -36,6 +36,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -131,6 +133,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
         if(currentUser == null)
             setToStart();
+
+        //Banner View
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
@@ -477,10 +485,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.lo
 
                 }
             });
-
-        }else {
-
-            Toast.makeText(getApplicationContext(), "Empty Massage", Toast.LENGTH_LONG).show();
 
         }
 

@@ -62,6 +62,8 @@ import android.widget.Toast;
 //import com.google.firebase.database.ValueEventListener;
 
 import com.facebook.AccessToken;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -148,6 +150,11 @@ public class PhoneVerification extends AppCompatActivity implements View.OnClick
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
         }
+
+        //Banner View
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         // Assign views
 

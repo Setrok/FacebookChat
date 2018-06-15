@@ -16,6 +16,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.facebook.facebookchat.mpesa.MPesaActivity;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,6 +64,11 @@ public class ViewProfile extends AppCompatActivity {
             startActivity(chatIntent);
             finish();
         }
+
+        //Banner View
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         profileImage = findViewById(R.id.view_profile_Img);
         profileName = findViewById(R.id.view_profile_name);
