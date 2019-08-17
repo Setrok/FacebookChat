@@ -3,4 +3,22 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!--Standart-->
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="white_greyish">#EEEEEE</color>
+
+    <!--MPesa-->
+    <color name="mpesa_background">#6E2C90</color>
+    <color name="mpesa_dialog">#562171</color>
+    <color name="mpesa_dialog_border">#3f0e58</color>
+    <color name="mpesa_green">#85BD50</color>
+
+    <color name="tabUnselectedColor">#b7b7b7</color>
+    <color name="profile_disabled_btn">#aaa</color>
+    <color name="tabSelectedColor">#fc8f00</color>
+    <color name="profileBG">#262626</color>
+    <color name="profile_acceptBtn">#28bb18</color>
+    <color name="profile_cancelBtn">#cf2825</color>
 </resources>
